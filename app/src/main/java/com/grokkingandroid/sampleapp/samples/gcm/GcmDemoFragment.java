@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -202,20 +203,49 @@ public class GcmDemoFragment extends DemoBaseFragment implements
    }
 
    private void sendMessage() {
-      Intent msgIntent = new Intent(getActivity(), GcmIntentService.class);
+      final Intent msgIntent = new Intent(getActivity(), GcmIntentService.class);
       msgIntent.setAction(Constants.ACTION_ECHO);
       String msg;
       if (!TextUtils.isEmpty(mTxtMsg.getText())) {
          msg = mTxtMsg.getText().toString();
          mTxtMsg.setText("");
+         String msgTxt = getString(R.string.msg_sent, msg);
+         Crouton.showText(getActivity(), msgTxt, Style.INFO);
+         msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, msg);
+         getActivity().startService(msgIntent);
       }
       else {
-         msg = getActivity().getString(R.string.no_message);
+         //msg = "No message entered but das offfffffk";
+         //msg = getActivity().getString(R.string.no_message);
+         mTxtMsg.setText("");
+         //String[] str = {"suh", "my", "fuh", "dih", "bih"};
+
+        /* for(int i =0; i < str.length; i++) {
+            String msgTxt = getString(R.string.msg_sent, str[i]);
+            Crouton.showText(getActivity(), msgTxt, Style.INFO);
+            msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, str[i]);
+            getActivity().startService(msgIntent);
+         } */
+
+         new CountDownTimer(30000, 5000) {
+            int i = 0;
+            String[] str = {"suh", "my", "fuh", "dih", "bih"};
+
+            public void onTick(long millisUntilFinished) {
+               String msgTxt = getString(R.string.msg_sent, str[i]);
+               Crouton.showText(getActivity(), msgTxt, Style.INFO);
+               msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, str[i]);
+               getActivity().startService(msgIntent);
+               i++;
+            }
+
+            public void onFinish() {
+
+            }
+         }.start();
+
       }
-      String msgTxt = getString(R.string.msg_sent, msg);
-      Crouton.showText(getActivity(), msgTxt, Style.INFO);            
-      msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, msg);
-      getActivity().startService(msgIntent);
+
    }
 
     /**
